@@ -1,6 +1,6 @@
 {
   "name": "es7-array.prototype.includes",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Polyfill for array.prototype.includes according to the ECMAScript 2016 specification.",
   "main": "index.js",
   "scripts": {
