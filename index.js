@@ -1,8 +1,12 @@
 // Polyfill published under Public Domain at
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {
+  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
     'use strict';
+    if (this == null) {
+      throw new TypeError('Array.prototype.includes called on null or undefined');
+    }
+
     var O = Object(this);
     var len = parseInt(O.length, 10) || 0;
     if (len === 0) {
@@ -17,13 +21,10 @@ if (!Array.prototype.includes) {
       if (k < 0) {k = 0;}
     }
     var currentElement;
-    var searchIsNaN = isNaN(searchElement);
     while (k < len) {
       currentElement = O[k];
-      // SameValueZero algorithm has to treat NaN as equal to itself, but
-      // NaN === NaN is false, so check explicitly
-      // SameValueZero treats 0 and -0 as equal, as does ===, so we're fine there
-      if (searchElement === currentElement || (searchIsNaN && isNaN(currentElement))) {
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
         return true;
       }
       k++;
