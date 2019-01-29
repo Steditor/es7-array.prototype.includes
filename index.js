@@ -1,7 +1,7 @@
 // Polyfill published under Public Domain at
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
+  Object.defineProperty(Array.prototype, 'includes', { configurable: true, enumerable: false, writable: true, value: function(searchElement /*, fromIndex*/) {
     'use strict';
     if (this == null) {
       throw new TypeError('Array.prototype.includes called on null or undefined');
@@ -30,5 +30,5 @@ if (!Array.prototype.includes) {
       k++;
     }
     return false;
-  };
+  }});
 }
