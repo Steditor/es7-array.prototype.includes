@@ -1,34 +1,53 @@
 // Polyfill published under Public Domain at
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Polyfill
+// https://tc39.github.io/ecma262/#sec-array.prototype.includes
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
-    'use strict';
-    if (this == null) {
-      throw new TypeError('Array.prototype.includes called on null or undefined');
-    }
+  Object.defineProperty(Array.prototype, 'includes', {
+    value: function(valueToFind, fromIndex) {
 
-    var O = Object(this);
-    var len = parseInt(O.length, 10) || 0;
-    if (len === 0) {
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      // 1. Let O be ? ToObject(this value).
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If len is 0, return false.
+      if (len === 0) {
+        return false;
+      }
+
+      // 4. Let n be ? ToInteger(fromIndex).
+      //    (If fromIndex is undefined, this step produces the value 0.)
+      var n = fromIndex | 0;
+
+      // 5. If n ≥ 0, then
+      //  a. Let k be n.
+      // 6. Else n < 0,
+      //  a. Let k be len + n.
+      //  b. If k < 0, let k be 0.
+      var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+      function sameValueZero(x, y) {
+        return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+      }
+
+      // 7. Repeat, while k < len
+      while (k < len) {
+        // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+        // b. If SameValueZero(valueToFind, elementK) is true, return true.
+        if (sameValueZero(o[k], valueToFind)) {
+          return true;
+        }
+        // c. Increase k by 1.
+        k++;
+      }
+
+      // 8. Return false
       return false;
     }
-    var n = parseInt(arguments[1], 10) || 0;
-    var k;
-    if (n >= 0) {
-      k = n;
-    } else {
-      k = len + n;
-      if (k < 0) {k = 0;}
-    }
-    var currentElement;
-    while (k < len) {
-      currentElement = O[k];
-      if (searchElement === currentElement ||
-         (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
-        return true;
-      }
-      k++;
-    }
-    return false;
-  };
+  });
 }
